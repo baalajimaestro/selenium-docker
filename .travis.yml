@@ -1,0 +1,12 @@
+language: bash
+
+dist: bionic
+
+services:
+  - docker
+
+script:
+  - docker build . -t baalajimaestro/selenium_python:latest
+  - docker tag baalajimaestro/selenium_python:latest baalajimaestro/selenium_python:latest
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push baalajimaestro/selenium_python
