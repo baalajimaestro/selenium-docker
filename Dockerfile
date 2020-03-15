@@ -80,15 +80,7 @@ RUN set -ex \
 	\
 	&& cd /usr/src/python \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
-	&& ./configure \
-		--build="$gnuArch" \
-		--enable-loadable-sqlite-extensions \
-		--enable-optimizations \
-		--enable-option-checking=fatal \
-		--enable-shared \
-		--with-system-expat \
-		--with-system-ffi \
-		--without-ensurepip \
+	&& ./configure --without-ensurepip \
 	&& make -j "$(nproc)" \
 	   CC="clang" \
 	   LD="ld.lld" \
@@ -96,10 +88,10 @@ RUN set -ex \
        NM=llvm-nm \
        OBJCOPY=llvm-objcopy \
        OBJDUMP=llvm-objdump \
-       STRIP=llvm-strip
+       STRIP=llvm-strip \
 # set thread stack size to 1MB so we don't segfault before we hit sys.getrecursionlimit()
 # https://github.com/alpinelinux/aports/commit/2026e1259422d4e0cf92391ca2d3844356c649d0
-		EXTRA_CFLAGS="-DTHREAD_STACK_SIZE=0x100000 -flto=${nproc}" \
+		EXTRA_CFLAGS="-DTHREAD_STACK_SIZE=0x100000 -flto=full" \
 	&& make install \
 	\
 	&& find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec scanelf --needed --nobanner --format '%n#p' '{}' ';' \
