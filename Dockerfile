@@ -75,12 +75,14 @@ RUN set -ex \
 		zlib-dev \
 		clang \
 		compiler-rt-static \
+	    llvm9 \
+		llvm9-dev \
 # add build deps before removing fetch deps in case there's overlap
 	&& apk del --no-network .fetch-deps \
 	\
 	&& cd /usr/src/python \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
-	&& ./configure --without-ensurepip \
+	&& CC="clang" ./configure --with-lto \
 	&& make -j "$(nproc)" \
 	   CC="clang" \
 	   LD="ld.lld" \
