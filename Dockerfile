@@ -6,7 +6,6 @@ RUN sed -e 's;^#http\(.*\)/edge/community;http\1/edge/community;g' -i /etc/apk/r
 RUN apk add --no-cache --update \
     git \
     bash \
-    python3 \
     py-requests \
     libpq \
     curl \
@@ -15,7 +14,6 @@ RUN apk add --no-cache --update \
     musl \
     xvfb \
     gcc \
-    python3-dev \
     screen \
     musl-dev
 
@@ -75,6 +73,8 @@ RUN set -ex \
 		util-linux-dev \
 		xz-dev \
 		zlib-dev \
+		clang \
+		compiler-rt-static \
 # add build deps before removing fetch deps in case there's overlap
 	&& apk del --no-network .fetch-deps \
 	\
@@ -90,6 +90,7 @@ RUN set -ex \
 		--with-system-ffi \
 		--without-ensurepip \
 	&& make -j "$(nproc)" \
+	   CC="clang" \
 # set thread stack size to 1MB so we don't segfault before we hit sys.getrecursionlimit()
 # https://github.com/alpinelinux/aports/commit/2026e1259422d4e0cf92391ca2d3844356c649d0
 		EXTRA_CFLAGS="-DTHREAD_STACK_SIZE=0x100000" \
@@ -145,6 +146,6 @@ RUN set -ex; \
 		\) -exec rm -rf '{}' +; \
 	rm -f get-pip.py
 
-RUN pip3 install -r selenium xvfbwrapper
+RUN pip3 install -U selenium xvfbwrapper
 
 CMD ["python3"]
